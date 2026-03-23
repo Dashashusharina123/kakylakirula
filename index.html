@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Кирилл Лопаткин какуля</title>
+   <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #1f5e7a, #0e3e52);
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      /* улучшение для мобильных */
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .main-container {
+      max-width: 500px;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+      margin: 0 auto;
+    }
+
+    header {
+      font-size: clamp(1.8rem, 8vw, 2.3rem);
+      font-weight: bold;
+      text-shadow: 3px 3px 0 #0a2f40;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      word-break: keep-all;
+      padding: 0 10px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 20px 18px;
+      margin: 16px 0;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .card p {
+      font-size: clamp(1rem, 4vw, 1.2rem);
+      margin: 0 0 12px 0;
+      font-weight: 500;
+    }
+
+    button {
+      background: #ffcd4a;
+      border: none;
+      padding: 14px 28px;
+      font-size: clamp(1rem, 4vw, 1.1rem);
+      font-weight: bold;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #1e3b44;
+      box-shadow: 0 4px 0 #b27d00;
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      min-width: 180px;
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #b27d00;
+    }
+
+    /* МОДАЛЬНОЕ ОКНО */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s, opacity 0.25s ease;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-window {
+      background: linear-gradient(145deg, #fff3e0, #ffe0b5);
+      width: 90%;
+      max-width: 340px;
+      border-radius: 48px;
+      padding: 20px 20px 28px;
+      text-align: center;
+      box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5);
+      border: 2px solid #ffb347;
+      position: relative;
+      animation: bounceIn 0.3s cubic-bezier(0.34, 1.2, 0.8, 1);
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-window h3 {
+      font-size: clamp(1.5rem, 6vw, 1.9rem);
+      margin: 8px 0 5px;
+      color: #b45f1b;
+      font-weight: bold;
+    }
+
+    .modal-window p {
+      font-size: clamp(0.9rem, 3.5vw, 1rem);
+      color: #6b3f00;
+      margin: 12px 0;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* Кнопка, которая будет перемещаться по ВСЕМУ ЭКРАНУ — адаптив для телефона */
+    .runaway-btn-global {
+      background: linear-gradient(135deg, #f5a623, #e67e22);
+      color: white;
+      padding: 14px 24px;
+      font-size: clamp(1rem, 4vw, 1.2rem);
+      border: none;
+      border-radius: 60px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #b45f1b;
+      transition: all 0.08s linear;
+      font-family: inherit;
+      position: fixed !important;
+      z-index: 1001;
+      white-space: nowrap;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      will-change: left, top;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      /* увеличиваем область касания */
+      min-width: 130px;
+      letter-spacing: 0.5px;
+    }
+
+    .runaway-btn-global:active {
+      transform: translate(-50%, -50%) scale(0.96);
+      box-shadow: 0 2px 0 #b45f1b;
+    }
+
+    /* Сообщение внутри модалки */
+    .love-message {
+      background: #2c7a4d;
+      color: #ffefb9;
+      padding: 12px 18px;
+      border-radius: 60px;
+      font-size: clamp(0.9rem, 3.5vw, 1rem);
+      font-weight: bold;
+      margin-top: 15px;
+      display: inline-block;
+      animation: fadeSlide 0.4s ease;
+      border-left: 5px solid #ffc107;
+      word-break: break-word;
+      max-width: 90%;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-area {
+      margin-top: 16px;
+      min-height: 70px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .fact-line {
+      background: rgba(0,0,0,0.35);
+      border-radius: 40px;
+      padding: 10px 12px;
+      margin-top: 15px;
+      font-size: clamp(0.85rem, 3.5vw, 1rem);
+      word-break: break-word;
+      backdrop-filter: blur(4px);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* убираем скролл при открытой модалке */
+    body.modal-open {
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* для очень маленьких экранов */
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+      .card {
+        padding: 18px 14px;
+      }
+      button {
+        padding: 12px 20px;
+        min-width: 150px;
+      }
+      .runaway-btn-global {
+        padding: 12px 20px;
+        min-width: 120px;
+        font-size: 0.95rem;
+      }
+      .modal-window {
+        padding: 16px 16px 24px;
+      }
+    }
+
+    /* для планшетов и маленьких телефонов горизонтальная ориентация */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .modal-window {
+        max-width: 380px;
+        padding: 12px 20px 20px;
+      }
+      .runaway-btn-global {
+        padding: 10px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+  <header>Кирюшке Лопаткину</header>
+
+  <div class="card">
+    <p>Нажми на кнопку - узнаешь секретный факт о себе </p>
+    <button id="factBtn">Показать факт </button>
+    <div id="factContainer" class="fact-line hidden"></div>
+  </div>
+</div>
+
+<!-- Модальное окно -->
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal-window">
+    <h3>ТЫ КАКУЛЯ!</h3>
+    <p id="modalFactText"> Вот это дааа</p>
+    <div id="modalMessageArea" class="message-area"></div>
+    <!-- Кнопка будет добавляться динамически, чтобы перемещать по всему экрану -->
+  </div>
+</div>
+
+<script>
+  // -------- Данные и элементы ----------
+  const factBtn = document.getElementById('factBtn');
+  const factContainer = document.getElementById('factContainer');
+  const moodSlider = document.getElementById('moodSlider');
+  const moodDisplay = document.getElementById('mood');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalMessageArea = document.getElementById('modalMessageArea');
+  const modalFactText = document.getElementById('modalFactText');
+  
+  // Массив фактов
+  const factsArray = [
+  ];
+  
+  // Переменные для кнопки-бегунка
+  let runawayButton = null;        // ссылка на кнопку
+  let escapeAttempts = 0;          // сколько раз уже убежала (макс 2)
+  let canClose = false;             // флаг, что уже можно закрывать (после 2х перемещений и показа сообщения)
+  let loveShown = false;            // показано ли сообщение "не обижайся я любя"
+  let currentRandomFact = '';       // текущий факт для отображения
+  
+  // Функция для получения случайных координат по всему экрану
+  function getRandomScreenPosition(btnElement) {
+    if (!btnElement) return { left: 0, top: 0 };
+    
+    // Получаем размеры кнопки
+    const btnRect = btnElement.getBoundingClientRect();
+    const btnWidth = btnRect.width;
+    const btnHeight = btnRect.height;
+    
+    // Размеры окна
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    // Отступы от краёв (чтобы кнопка не выходила за экран)
+    const padding = 20;
+    const maxLeft = windowWidth - btnWidth - padding;
+    const minLeft = padding;
+    const maxTop = windowHeight - btnHeight - padding;
+    const minTop = padding;
+    
+    // Генерируем случайные координаты
+    let randomLeft = Math.floor(Math.random() * (maxLeft - minLeft + 1) + minLeft);
+    let randomTop = Math.floor(Math.random() * (maxTop - minTop + 1) + minTop);
+    
+    return { left: randomLeft, top: randomTop };
+  }
+  
+  // Функция для перемещения кнопки в случайное место на экране
+  function relocateButtonToRandomPosition() {
+    if (!runawayButton) return;
+    
+    const newPos = getRandomScreenPosition(runawayButton);
+    // Используем fixed позиционирование, меняем left и top
+    runawayButton.style.left = newPos.left + 'px';
+    runawayButton.style.top = newPos.top + 'px';
+    
+    // Добавляем небольшую анимацию для прикола
+    runawayButton.style.transition = 'left 0.15s ease-out, top 0.15s ease-out';
+    setTimeout(() => {
+      if (runawayButton) runawayButton.style.transition = '';
+    }, 150);
+  }
+  
+  // Создание кнопки-бегунка (глобальная, плавает по всему экрану)
+  function createRunawayButton() {
+    // Если кнопка уже существует, удаляем её
+    if (runawayButton) {
+      runawayButton.remove();
+      runawayButton = null;
+    }
+    
+    const btn = document.createElement('button');
+    btn.textContent = 'Закрыть ';
+    btn.className = 'runaway-btn-global';
+    btn.setAttribute('id', 'globalRunawayBtn');
+    
+    // Начальная позиция по центру экрана
+    btn.style.left = '50%';
+    btn.style.top = '50%';
+    btn.style.transform = 'translate(-50%, -50%)';
+    
+    document.body.appendChild(btn);
+    return btn;
+  }
+  
+  // Обновление позиции кнопки с учётом transform
+  function updateButtonPosition(btn, left, top) {
+    btn.style.left = left + 'px';
+    btn.style.top = top + 'px';
+    btn.style.transform = 'none'; // убираем transform, т.к. используем left/top
+  }
+  
+  // Сброс состояния убегающей кнопки
+  function resetRunawayState() {
+    escapeAttempts = 0;
+    canClose = false;
+    loveShown = false;
+    if (runawayButton) {
+      // Возвращаем в центр экрана
+      runawayButton.style.left = '50%';
+      runawayButton.style.top = '50%';
+      runawayButton.style.transform = 'translate(-50%, -50%)';
+      runawayButton.textContent = ' Закрыть ';
+      runawayButton.style.transition = '';
+    }
+    if (modalMessageArea) {
+      modalMessageArea.innerHTML = '';
+    }
+  }
+  
+  // Показать сообщение "не обижайся, я любя" внутри модалки
+  function showLoveMessageInModal() {
+    modalMessageArea.innerHTML = '';
+    const loveDiv = document.createElement('div');
+    loveDiv.className = 'love-message';
+    loveDiv.textContent = 'не обижайся, я любя :))))';
+    modalMessageArea.appendChild(loveDiv);
+    loveShown = true;
+    
+    // Через 2.5 секунды сообщение исчезает, но флаг остаётся
+    setTimeout(() => {
+      if (modalMessageArea && modalMessageArea.firstChild) {
+        // Не удаляем, чтобы пользователь видел, но можно оставить
+        // Но чтобы не мешало, оставим, пусть висит
+      }
+    }, 2500);
+  }
+  
+  // Закрыть модалку полностью и удалить убегающую кнопку
+  function closeModalAndCleanup() {
+    modalOverlay.classList.remove('active');
+    
+    // Удаляем убегающую кнопку, если она есть
+    if (runawayButton) {
+      runawayButton.remove();
+      runawayButton = null;
+    }
+    
+    // Сбрасываем состояния
+    escapeAttempts = 0;
+    canClose = false;
+    loveShown = false;
+    
+    // Очищаем сообщения
+    if (modalMessageArea) modalMessageArea.innerHTML = '';
+  }
+  
+  // Обработчик клика по убегающей кнопке
+  function onRunawayClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Если кнопка уже в режиме "можно закрыть" (после двух перемещений)
+    if (canClose) {
+      // Если ещё не показывали сообщение, показываем
+      if (!loveShown) {
+        showLoveMessageInModal();
+        // После показа сообщения при следующем клике закрываем
+        // Но по заданию: "после того как ее нажимаю открывалось окошко 'не обижайся я любя'"
+        // Значит при первом нажатии после двух перемещений показываем сообщение, 
+        // а при повторном нажатии закрываем окно
+        // Сделаем так: если сообщение ещё не показано - показываем, иначе закрываем
+        return;
+      } else {
+        // Сообщение уже было показано, закрываем модалку
+        closeModalAndCleanup();
+        return;
+      }
+    }
+    
+    // Режим убегания: если кнопка убежала меньше 2 раз, перемещаем
+    if (escapeAttempts < 2) {
+      // Перемещаем кнопку в случайное место по экрану
+      relocateButtonToRandomPosition();
+      escapeAttempts++;
+      
+      // Меняем текст кнопки для прикола
+      if (escapeAttempts === 1) {
+        runawayButton.textContent = 'Не туда';
+        setTimeout(() => {
+          if (runawayButton && escapeAttempts === 1) runawayButton.textContent = ' Закрыть ';
+        }, 800);
+      } else if (escapeAttempts === 2) {
+        runawayButton.textContent = 'Да че ты косишь';
+        setTimeout(() => {
+          if (runawayButton && escapeAttempts === 2) runawayButton.textContent = ' Закрыть ';
+        }, 800);
+      }
+      
+      return;
+    }
+    
+    // Если escapeAttempts >= 2, то переключаемся в режим "можно закрыть"
+    if (escapeAttempts >= 2 && !canClose) {
+      canClose = true;
+      // При первом нажатии после двух перемещений показываем сообщение
+      showLoveMessageInModal();
+      // Меняем текст кнопки на обычный
+      if (runawayButton) {
+        runawayButton.textContent = ' Закрыть ';
+      }
+      // Теперь следующий клик закроет окно
+      return;
+    }
+  }
+  
+  // Открытие модалки с какулей и создание убегающей кнопки
+  function openModalWithKakulya(factText) {
+    // Удаляем старую кнопку, если есть
+    if (runawayButton) {
+      runawayButton.remove();
+      runawayButton = null;
+    }
+    
+    // Сбрасываем состояния
+    escapeAttempts = 0;
+    canClose = false;
+    loveShown = false;
+    modalMessageArea.innerHTML = '';
+    
+    // Обновляем текст факта в модалке
+    if (factText) {
+      modalFactText.innerHTML = ` ${factText}`;
+    } else {
+      modalFactText.innerHTML = 'Это факт ';
+    }
+    
+    // Показываем модалку
+    modalOverlay.classList.add('active');
+    
+    // Создаём новую убегающую кнопку по всему экрану
+    runawayButton = createRunawayButton();
+    
+    // Добавляем обработчик клика
+    runawayButton.addEventListener('click', onRunawayClick);
+    
+    // Небольшая задержка для красоты, чтобы кнопка появилась плавно
+    setTimeout(() => {
+      if (runawayButton) {
+        // Убедимся, что кнопка видна и не перекрыта модалкой
+        runawayButton.style.zIndex = '1002';
+      }
+    }, 50);
+  }
+  
+  // Показ факта: выбираем случайный, показываем в карточке и открываем модалку с какулей
+  function showFactAndOpenModal() {
+    // Случайный факт
+    const randomIndex = Math.floor(Math.random() * factsArray.length);
+    currentRandomFact = factsArray[randomIndex];
+    
+    // Показываем факт в основной карточке (дополнительно)
+    factContainer.classList.remove('hidden');
+    
+    // Открываем модалку с какулей, передаём туда этот факт
+    openModalWithKakulya(currentRandomFact);
+  }
+  
+  // Функция обновления настроения
+  function updateMood(value) {
+    const val = Number(value);
+    if (val < 30) moodDisplay.textContent = "😢";
+    else if (val < 70) moodDisplay.textContent = "😐";
+    else moodDisplay.textContent = "😄";
+  }
+  
+  // ---- Инициализация событий ----
+  factBtn.addEventListener('click', showFactAndOpenModal);
+  
+  moodSlider.addEventListener('input', (e) => {
+    updateMood(e.target.value);
+  });
+  
+  // Задать начальное настроение
+  updateMood(moodSlider.value);
+  
+  // Закрытие модалки при клике на оверлей (но только если не мешает игре)
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      // Не закрываем принудительно, чтобы пользователь обязательно прошел игру с кнопкой
+      // Но чтобы не было бага - не закрываем, только через кнопку
+      // Можно добавить вибрацию или предупреждение, но оставим как есть
+    }
+  });
+  
+  // При изменении размера окна, если кнопка существует и она в режиме убегания, 
+  // проверяем, не вышла ли она за границы (на случай ресайза)
+  window.addEventListener('resize', () => {
+    if (runawayButton && !canClose && escapeAttempts < 2) {
+      // Если кнопка ещё убегает, проверим, что она в пределах экрана
+      const btnRect = runawayButton.getBoundingClientRect();
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      
+      let needReposition = false;
+      if (btnRect.right > windowWidth || btnRect.left < 0 || btnRect.bottom > windowHeight || btnRect.top < 0) {
+        needReposition = true;
+      }
+      
+      if (needReposition) {
+        const newPos = getRandomScreenPosition(runawayButton);
+        runawayButton.style.left = newPos.left + 'px';
+        runawayButton.style.top = newPos.top + 'px';
+        runawayButton.style.transform = 'none';
+      }
+    }
+  });
+  
+  // Обработчик для закрытия модалки по Escape (для удобства, но чтобы не нарушать логику, отключим)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+      // Не закрываем, чтобы пользователь прошёл испытание с кнопкой
+      e.preventDefault();
+    }
+  });
+  
+  // Стиль для предотвращения прокрутки фона при открытой модалке
+  modalOverlay.addEventListener('transitionend', (e) => {
+    if (modalOverlay.classList.contains('active')) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  });
+  
+  // На случай, если пользователь случайно нажал на кнопку вне зоны видимости
+  console.log('Готово! Кнопка закрытия будет убегать по всему экрану два раза 🏃‍♂️');
+</script>
+</body>
+</html>
